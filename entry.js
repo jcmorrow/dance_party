@@ -1,42 +1,57 @@
-var THREE = require("three");
-var WIDTH = 1200, HEIGHT = 800;
-var VIEW_ANGLE = 45,
-    ASPECT = WIDTH / HEIGHT,
-    NEAR = 0.1,
-    FAR = 10000;
+const THREE = require("three");
+const WIDTH = 400
+const HEIGHT = 400;
+const VIEW_ANGLE = 45;
+const ASPECT = WIDTH / HEIGHT;
+const NEAR = 0.1;
+const FAR = 10000;
 
-var renderer = new THREE.WebGLRenderer();
-var camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR)
-var scene = new THREE.Scene();
-camera.position.z = 300;
+const renderer = new THREE.WebGLRenderer();
 renderer.setSize(WIDTH, HEIGHT);
 
-var container = document.getElementById("container");
-container.appendChild(renderer.domElement);
+const camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR)
+camera.position.z = 300;
 
-// Shaders and stuff
-var vertexShader = require("raw!./vertexShader.glsl");
-var fragmentShader = require("raw!./fragment-shader.glsl");
-
-var shaderMaterial = new THREE.ShaderMaterial({
-  uniforms: {
-    time: { value: performance.now() / 1000} ,
-  },
-  vertexShader: vertexShader,
-  fragmentShader: fragmentShader,
-});
-var plane = new THREE.Mesh(new THREE.PlaneGeometry(500,300,1), shaderMaterial);
-scene.add(plane);
-
-var pointLight = new THREE.PointLight(0xFFFFFF);
-
+const scene = new THREE.Scene();
+window.scene = scene;
+const pointLight = new THREE.PointLight(0xFFFFFF);
 pointLight.position.x = 0;
 pointLight.position.y = 0;
 pointLight.position.z = 300;
-scene.add(pointLight);
+window.scene.add(pointLight);
+
+const container = document.getElementById("container");
+const vertexShader = require("raw!./vertexShader.glsl");
+
+container.appendChild(renderer.domElement);
+
+const addShaderToScene = (shader) => {
+  console.log(shader);
+  window.shaderMaterial = new THREE.ShaderMaterial({
+    uniforms: {time: {value: performance.now() / 1000}},
+    vertexShader: vertexShader,
+    fragmentShader: shader,
+  });
+  // Shaders and stuff
+  const plane = new THREE.Mesh(
+    new THREE.PlaneGeometry(500,300,1),
+    window.shaderMaterial
+  );
+  window.scene.add(plane);
+}
+
+const fragmentShader = require("raw!./fragment-shader.glsl");
+addShaderToScene(fragmentShader)
+const textArea = document.getElementById("shader");
+textArea.innerHTML = fragmentShader;
+const button = document.getElementById("submit");
+button.onclick = () => {
+  addShaderToScene(textArea.value);
+};
+
 
 (function render() {
   requestAnimationFrame(render);
-  shaderMaterial.uniforms.time = { value: performance.now() / 1000 };
-  renderer.render(scene, camera);
+  window.shaderMaterial.uniforms.time = { value: performance.now() / 1000 };
+  renderer.render(window.scene, camera);
 })();
