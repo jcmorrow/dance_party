@@ -7,5 +7,14 @@ module.exports = {
   },
   module: {
     loaders: []
+
+  },
+  module: {
+    rules: [
+      {
+        test: /\.glsl/,
+        use: 'raw-loader'
+      }
+    ]
   }
 }

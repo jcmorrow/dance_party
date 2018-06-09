@@ -1,8 +1,5 @@
-// SETUP
 var THREE = require("three");
-
-var WIDTH = 1400, HEIGHT = 900;
-
+var WIDTH = 1200, HEIGHT = 800;
 var VIEW_ANGLE = 45,
     ASPECT = WIDTH / HEIGHT,
     NEAR = 0.1,
@@ -43,5 +40,3 @@ scene.add(pointLight);
   shaderMaterial.uniforms.time = { value: performance.now() / 1000 };
   renderer.render(scene, camera);
 })();
-
-
